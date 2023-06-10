@@ -1,0 +1,14 @@
+[hooks]
+pre-commit = """\
+    cargo fmt -- --check \
+    && cargo test --features runtime-tokio-rustls --workspace --bins --examples --tests \
+    && cargo clippy  --features runtime-tokio-rustls --workspace --bins --examples --tests -- -D warnings \
+    && cargo sync-readme && git add README.md \
+    && typos \
+"""
+pre-push = """\
+    cargo sync-readme -c \
+"""
+
+[logging]
+verbose = true
