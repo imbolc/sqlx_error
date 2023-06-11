@@ -4,12 +4,13 @@ edition = "2021"
 license = "MIT"
 name = "sqlx-error"
 repository = "https://github.com/imbolc/sqlx-error"
-version = "0.1.0"
+version = "0.1.1"
 
 [dependencies]
 sqlx-core = { version = "0.6", default-features = false }
 
 [features]
+default = ["runtime-tokio-rustls"]
 runtime-actix-native-tls = ["sqlx-core/runtime-tokio-native-tls"]
 runtime-actix-rustls = ["sqlx-core/runtime-tokio-rustls"]
 runtime-async-std-native-tls = ["sqlx-core/runtime-async-std-native-tls"]
