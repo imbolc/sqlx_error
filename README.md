@@ -32,8 +32,8 @@ fn bar() -> Result<(), MyError> {
     Ok(())
 }
 
-assert_eq!(foo().unwrap_err().to_string(), "sqlx rust_out::foo");
-assert_eq!(bar().unwrap_err().to_string(), "sqlx rust_out::bar more context");
+assert_eq!(foo().unwrap_err().to_string(), "sqlx rust_out::foo, src/lib.rs:15:43");
+assert_eq!(bar().unwrap_err().to_string(), "sqlx rust_out::bar, src/lib.rs:21:43, more context");
 ```
 
 <!-- cargo-sync-readme end -->

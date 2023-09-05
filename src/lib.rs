@@ -27,8 +27,8 @@
 //! }
 //!
 //! # fn main() {
-//! assert_eq!(foo().unwrap_err().to_string(), "sqlx rust_out::foo");
-//! assert_eq!(bar().unwrap_err().to_string(), "sqlx rust_out::bar more context");
+//! assert_eq!(foo().unwrap_err().to_string(), "sqlx rust_out::foo, src/lib.rs:15:43");
+//! assert_eq!(bar().unwrap_err().to_string(), "sqlx rust_out::bar, src/lib.rs:21:43, more context");
 //! # }
 //! ```
 
@@ -51,28 +51,11 @@ pub type SqlxResult<T> = Result<T, SqlxError>;
 #[macro_export]
 macro_rules! sqlx_error {
     () => {
-        |e| $crate::SqlxError::new(e, $crate::code_path!().to_string())
+        |e| $crate::SqlxError::new(e, code_path::with_loc!())
     };
     ($desc:expr) => {
-        |e| $crate::SqlxError::new(e, format!("{} {}", $crate::code_path!(), $desc))
+        |e| $crate::SqlxError::new(e, format!("{}, {}", code_path::with_loc!(), $desc))
     };
-}
-
-/// The macro returns the current function path
-#[macro_export]
-macro_rules! code_path {
-    () => {{
-        fn f() {}
-        fn type_name_of<T>(_: T) -> &'static str {
-            std::any::type_name::<T>()
-        }
-        let mut name = type_name_of(f);
-        name = &name[..name.len() - 3];
-        while name.ends_with("::{{closure}}") {
-            name = &name[..name.len() - 13];
-        }
-        name
-    }};
 }
 
 impl SqlxError {
