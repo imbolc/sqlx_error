@@ -4,10 +4,10 @@ edition = "2021"
 license = "MIT"
 name = "sqlx-error"
 repository = "https://github.com/imbolc/sqlx-error"
-version = "0.3.0"
+version = "0.4.0"
 
 [dependencies]
-code-path = "0.2"
+code-path = "0.3"
 sqlx-core = { version = "0.7" }
 
 [dev-dependencies]

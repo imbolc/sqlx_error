@@ -51,10 +51,10 @@ pub type SqlxResult<T> = Result<T, SqlxError>;
 #[macro_export]
 macro_rules! sqlx_error {
     () => {
-        |e| $crate::SqlxError::new(e, code_path::with_loc!())
+        |e| $crate::SqlxError::new(e, code_path::code_path!().into())
     };
     ($desc:expr) => {
-        |e| $crate::SqlxError::new(e, format!("{}, {}", code_path::with_loc!(), $desc))
+        |e| $crate::SqlxError::new(e, format!("{}, {}", code_path::code_path!(), $desc))
     };
 }
 
