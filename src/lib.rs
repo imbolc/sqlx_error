@@ -1,37 +1,5 @@
-//! # sqlx-error
-//!
-//! A wrapper around `sqlx::Error` to provide error path and additional context.
-//!
-//! ## Usage
-//!
-//! ```rust
-//! use sqlx_error::{sqlx_error, SqlxError};
-//!
-//! #[derive(Debug, thiserror::Error)]
-//! pub enum MyError {
-//!     #[error(transparent)]
-//!     Sqlx(#[from] SqlxError),
-//! }
-//!
-//! /// If you have a single sqlx query per function, the function path by itself could provide
-//! /// enough context
-//! fn foo() -> Result<(), MyError> {
-//!     Err(sqlx::Error::RowNotFound).map_err(sqlx_error!())?;
-//!     Ok(())
-//! }
-//!
-//! /// Or you can add more context
-//! fn bar() -> Result<(), MyError> {
-//!     Err(sqlx::Error::RowNotFound).map_err(sqlx_error!("more context"))?;
-//!     Ok(())
-//! }
-//!
-//! # fn main() {
-//! assert_eq!(foo().unwrap_err().to_string(), "sqlx: rust_out::foo at src/lib.rs:15");
-//! assert_eq!(bar().unwrap_err().to_string(), "sqlx: more context in rust_out::bar at src/lib.rs:21");
-//! # }
-//! ```
-
+#![cfg_attr(docsrs, feature(doc_auto_cfg))]
+#![doc = include_str!("../README.md")]
 #![warn(clippy::all, missing_docs, nonstandard_style, future_incompatible)]
 
 use std::{error::Error, fmt, option::Option};
