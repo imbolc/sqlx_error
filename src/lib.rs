@@ -27,8 +27,8 @@
 //! }
 //!
 //! # fn main() {
-//! assert_eq!(foo().unwrap_err().to_string(), "sqlx rust_out::foo, src/lib.rs:15:43");
-//! assert_eq!(bar().unwrap_err().to_string(), "sqlx rust_out::bar, src/lib.rs:21:43, more context");
+//! assert_eq!(foo().unwrap_err().to_string(), "sqlx rust_out::foo at src/lib.rs:15");
+//! assert_eq!(bar().unwrap_err().to_string(), "sqlx rust_out::bar at src/lib.rs:21, more context");
 //! # }
 //! ```
 
@@ -51,11 +51,30 @@ pub type SqlxResult<T> = Result<T, SqlxError>;
 #[macro_export]
 macro_rules! sqlx_error {
     () => {
-        |e| $crate::SqlxError::new(e, code_path::code_path!().into())
+        |e| {
+            $crate::SqlxError::new(
+                e,
+                $crate::__private::code_path::code_path!().into(),
+            )
+        }
     };
     ($desc:expr) => {
-        |e| $crate::SqlxError::new(e, format!("{}, {}", code_path::code_path!(), $desc))
+        |e| {
+            $crate::SqlxError::new(
+                e,
+                format!(
+                    "{}, {}",
+                    $crate::__private::code_path::code_path!(),
+                    $desc,
+                ),
+            )
+        }
     };
+}
+
+#[doc(hidden)]
+pub mod __private {
+    pub use code_path;
 }
 
 impl SqlxError {
