@@ -27,14 +27,14 @@
 //! }
 //!
 //! # fn main() {
-//! assert_eq!(foo().unwrap_err().to_string(), "sqlx rust_out::foo at src/lib.rs:15");
-//! assert_eq!(bar().unwrap_err().to_string(), "sqlx rust_out::bar at src/lib.rs:21, more context");
+//! assert_eq!(foo().unwrap_err().to_string(), "sqlx: rust_out::foo at src/lib.rs:15");
+//! assert_eq!(bar().unwrap_err().to_string(), "sqlx: more context in rust_out::bar at src/lib.rs:21");
 //! # }
 //! ```
 
 #![warn(clippy::all, missing_docs, nonstandard_style, future_incompatible)]
 
-use ::std::{error::Error, fmt, option::Option};
+use std::{error::Error, fmt, option::Option};
 
 /// Sqlx error wrapper to hold additional info
 #[derive(Debug)]
@@ -51,21 +51,16 @@ pub type SqlxResult<T> = Result<T, SqlxError>;
 #[macro_export]
 macro_rules! sqlx_error {
     () => {
-        |e| {
-            $crate::SqlxError::new(
-                e,
-                $crate::__private::code_path::code_path!().into(),
-            )
-        }
+        |e| $crate::SqlxError::new(e, $crate::__private::code_path::code_path!().into())
     };
     ($desc:expr) => {
         |e| {
             $crate::SqlxError::new(
                 e,
                 format!(
-                    "{}, {}",
-                    $crate::__private::code_path::code_path!(),
+                    "{} in {}",
                     $desc,
+                    $crate::__private::code_path::code_path!()
                 ),
             )
         }
@@ -86,12 +81,46 @@ impl SqlxError {
 
 impl fmt::Display for SqlxError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "sqlx {}", self.1)
+        write!(f, "sqlx: {}", self.1)
     }
 }
 
 impl Error for SqlxError {
     fn source(&self) -> Option<&(dyn Error + 'static)> {
         Option::Some(&self.0)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[derive(Debug, thiserror::Error)]
+    pub enum MyError {
+        #[error(transparent)]
+        Sqlx(#[from] SqlxError),
+    }
+
+    fn bare() -> Result<(), MyError> {
+        Err(sqlx::Error::RowNotFound).map_err(sqlx_error!())?;
+        Ok(())
+    }
+
+    fn with_context() -> Result<(), MyError> {
+        Err(sqlx::Error::RowNotFound).map_err(sqlx_error!("my context"))?;
+        Ok(())
+    }
+
+    #[test]
+    fn works() {
+        assert!(bare()
+            .unwrap_err()
+            .to_string()
+            .starts_with("sqlx: sqlx_error::tests::bare at src/lib.rs:"));
+
+        assert!(with_context()
+            .unwrap_err()
+            .to_string()
+            .starts_with("sqlx: my context in sqlx_error::tests::with_context at src/lib.rs:"));
     }
 }
