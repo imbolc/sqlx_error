@@ -7,10 +7,9 @@ repository = "https://github.com/imbolc/sqlx-error"
 version = "0.5.0"
 
 [dependencies]
-code-path = "0.3"
+code-path = "0.4"
 sqlx-core = { version = "0.8" }
 
 [dev-dependencies]
-rusty-hook = "0.11"
 sqlx = { version = "0.8", features = ["runtime-tokio-rustls"] }
-thiserror = "1"
+thiserror = "2"
