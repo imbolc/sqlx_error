@@ -4,12 +4,12 @@ edition = "2021"
 license = "MIT"
 name = "sqlx-error"
 repository = "https://github.com/imbolc/sqlx-error"
-version = "0.5.1"
+version = "0.6.0"
 
 [dependencies]
 code-path = "0.4"
-sqlx-core = { version = "0.8" }
+sqlx-core = { version = "0.9" }
 
 [dev-dependencies]
-sqlx = { version = "0.8", features = ["runtime-tokio-rustls"] }
+sqlx = { version = "0.9", features = ["runtime-tokio", "tls-rustls"] }
 thiserror = "2"
